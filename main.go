@@ -6,10 +6,8 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"errors"
-	"io"
-	"io/ioutil"
+	"github.com/comnics/did-example/util"
 	"log"
-	"os"
 
 	"github.com/btcsuite/btcutil/base58"
 )
@@ -24,19 +22,13 @@ const (
 	keyType = "ecdsa"
 )
 
-// Logger
-type Logger struct {
-	Trace *log.Logger
-	Warn  *log.Logger
-	Info  *log.Logger
-	Error *log.Logger
-}
-
-var logger Logger
+var (
+	logger util.Logger
+)
 
 // Main
 func main() {
-	InitLog(ioutil.Discard, os.Stdout, os.Stdout, os.Stderr)
+	logger := util.GetLogger()
 
 	logger.Info.Println("### Start Main() ###")
 
@@ -52,20 +44,12 @@ func main() {
 
 }
 
-// InitLog: Initialize the log
-func InitLog(traceHandle io.Writer, infoHandle io.Writer, warningHandle io.Writer, errorHandle io.Writer) {
-	logger.Trace = log.New(traceHandle, "[TRACE] ", log.Ldate|log.Ltime|log.Lshortfile)
-	logger.Info = log.New(infoHandle, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
-	logger.Warn = log.New(warningHandle, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
-	logger.Error = log.New(errorHandle, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
-}
-
 // GenerateKeypair : Generate a keypair (ECDSA)
 func GenerateKeypair(keyType string) (Keypair, error) {
 	pvKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 
 	if err != nil {
-		logger.Error.Println("Key generation error.")
+		logger.Error.Println("Key generation error.", "Key Type is [", keyType, "]")
 		return Keypair{}, errors.New("ECDSA Keypair generation was Fail!")
 	}
 
@@ -79,6 +63,7 @@ func EncodeBase58_PrivateKey(privateKey ecdsa.PrivateKey) string {
 	privateKeyBytes, err := x509.MarshalECPrivateKey(&privateKey)
 	if err != nil {
 		log.Printf("error occured: %v", err.Error())
+		return ""
 	} else {
 		privateKeyBase58 = base58.Encode(privateKeyBytes)
 	}
@@ -93,6 +78,7 @@ func EncodeBase58_PublicKey(publicKey ecdsa.PublicKey) string {
 	publicKeyBytes, err := x509.MarshalPKIXPublicKey(&publicKey)
 	if err != nil {
 		log.Printf("error occured: %v", err.Error())
+		return ""
 	} else {
 		publicKeyBase58 = base58.Encode(publicKeyBytes)
 	}
