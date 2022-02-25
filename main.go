@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"crypto/x509"
 	"errors"
+	"github.com/comnics/did-example/core"
 	"github.com/comnics/did-example/util"
 	"log"
 
@@ -41,6 +42,13 @@ func main() {
 	// Print
 	logger.Info.Printf("private Key : %s", EncodeBase58_PrivateKey(myKeypair.privateKey))
 	logger.Info.Printf("public Key : %s", EncodeBase58_PublicKey(myKeypair.publicKey))
+
+	method := "comnic"
+	did := core.MakeDID(method, EncodeBase58_PublicKey(myKeypair.publicKey))
+	logger.Info.Printf("DID : [%s]", did)
+
+	didDocument := MakeDIDDocument(method, did)
+	logger.Info.Printf("DID Document : [%s]", didDocument)
 
 }
 
@@ -84,4 +92,11 @@ func EncodeBase58_PublicKey(publicKey ecdsa.PublicKey) string {
 	}
 
 	return publicKeyBase58
+}
+
+func MakeDIDDocument(method string, did string) core.DIDDocument {
+
+	doc := core.DIDDocument{Id: did}
+
+	return doc
 }
