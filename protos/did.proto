@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option go_package = "github.com/comnics/did-example/proto2";
+
+package did;
+
+message Did {
+  string id = 1;
+  string desc = 2;
+}
