@@ -1,8 +1,12 @@
 syntax = "proto3";
 
-option go_package = "github.com/comnics/did-example/proto2";
+option go_package = "github.com/comnics/did-example/protos";
 
 package did;
+
+service SimpleDid {
+  rpc GetDid (Did) returns (Did) {}
+}
 
 message Did {
   string id = 1;

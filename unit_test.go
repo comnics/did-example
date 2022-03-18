@@ -1,6 +1,9 @@
 package main
 
-import "testing"
+import (
+	"github.com/comnics/did-example/protos"
+	"testing"
+)
 
 // Test ECDSA Keypair generation.
 func TestGenerateKeypair(t *testing.T) {
@@ -26,4 +29,15 @@ func TestEncodeBase58(t *testing.T) {
 		t.Error("Fail to encode the PublicKey.")
 	}
 
+}
+
+func TestGRPCDid(t *testing.T) {
+	testDid := protos.Did{
+		Id:   "test",
+		Desc: "Dest Test",
+	}
+
+	if testDid.Id == "" {
+		t.Error("Error.")
+	}
 }

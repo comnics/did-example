@@ -11,6 +11,8 @@ import (
 	"log"
 
 	"github.com/btcsuite/btcutil/base58"
+
+	pb "github.com/comnics/did-example/protos"
 )
 
 // Simple KMS
@@ -49,6 +51,10 @@ func main() {
 
 	didDocument := MakeDIDDocument(method, did)
 	logger.Info.Printf("DID Document : [%s]", didDocument)
+
+	testDid := pb.Did{Id: "12342", Desc: "abcde"}
+
+	logger.Info.Printf("Test Did: %s", testDid.GetId())
 
 }
 
