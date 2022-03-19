@@ -99,7 +99,7 @@ func (e *ECDSAManager) PublicKeyToString() (string, error) {
 	return hex.EncodeToString(publicKeyHash[:]), nil
 }
 
-func (e *ECDSAManager) PublicKey_Base58() string {
+func (e *ECDSAManager) PublicKeyBase58() string {
 	if e.PublicKey == nil {
 		return ""
 	}

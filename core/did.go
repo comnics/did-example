@@ -1,20 +1,21 @@
 package core
 
 import (
-	"crypto/sha256"
 	"fmt"
-	"github.com/btcsuite/btcutil/base58"
+	"github.com/comnics/did-example/util"
 )
 
-func MakeDID(method string, pbKey string) (newDID string) {
-	specificIdentifier := MakeSha256(pbKey)
-	return fmt.Sprintf("did:%s:%s", method, specificIdentifier)
+type DIDManager struct {
+	did    string
+	method string
 }
 
-func MakeSha256(plainText string) string {
-	hash := sha256.New()
-	hash.Write([]byte(plainText))
+func (d *DIDManager) MakeDID(method string, pbKey string) {
+	d.method = method
+	specificIdentifier := util.MakeHashBase58(pbKey)
+	d.did = fmt.Sprintf("did:%s:%s", d.method, specificIdentifier)
+}
 
-	md := hash.Sum(nil)
-	return base58.Encode(md)
+func (d *DIDManager) String() string {
+	return d.did
 }

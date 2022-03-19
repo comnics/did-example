@@ -2,10 +2,8 @@ package main
 
 import (
 	"crypto/ecdsa"
-	"encoding/json"
 	"fmt"
 	"github.com/comnics/did-example/core"
-	pb "github.com/comnics/did-example/protos"
 	"github.com/comnics/did-example/util"
 )
 
@@ -33,18 +31,20 @@ func main() {
 	var ecdsa core.ECDSAManager // ecdsa := new(core.ECDSAManager)
 	ecdsa.Generate()
 
-	method := "comnic"
-	did := core.MakeDID(method, ecdsa.PublicKey_Base58())
-	fmt.Printf("DID : [%s]\n", did)
+	var did core.DIDManager
 
-	didDocument := MakeDIDDocument(method, did)
-	doc, _ := json.Marshal(didDocument)
-	fmt.Printf("DID Document : [%s]\n", string(doc))
+	did.MakeDID("comnic", ecdsa.PublicKeyBase58())
+	fmt.Printf("DID : [%s]\n", did.String())
 
-	// protobuf test
-	testDid := pb.Did{Id: "12342", Desc: "abcde"}
-
-	fmt.Printf("Test Did: %s\n", testDid.GetId())
+	//
+	//didDocument := MakeDIDDocument(method, did)
+	//doc, _ := json.Marshal(didDocument)
+	//fmt.Printf("DID Document : [%s]\n", string(doc))
+	//
+	//// protobuf test
+	//testDid := pb.Did{Id: "12342", Desc: "abcde"}
+	//
+	//fmt.Printf("Test Did: %s\n", testDid.GetId())
 
 }
 
