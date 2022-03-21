@@ -1,7 +1,10 @@
 package core
 
+import "encoding/json"
+
 type didDocumentInterface interface {
 	produce(doc DIDDocument) string
+	consume(str string) DIDDocument
 }
 
 type DIDDocument struct {
@@ -40,7 +43,30 @@ type ServiceProperty struct {
 	ServiceEndpoint string `json:"serviceEndpoint"`
 }
 
-func (doc *DIDDocument) produce() string {
+func NewDIDDocument(did string) (doc *DIDDocument) {
+	var docTmp = new(DIDDocument)
+	docTmp.Context = []string{"https://www.w3.org/ns/did/v1"}
+	docTmp.Id = did
 
-	return ""
+	return docTmp
+}
+
+func (doc *DIDDocument) Produce() string {
+	str, err := json.Marshal(doc)
+	if err != nil {
+		// fmt.Println("Fail to marshal: ", err)
+		return ""
+	}
+	return string(str)
+}
+
+func (doc *DIDDocument) Consume(str string) {
+	err := json.Unmarshal([]byte(str), doc)
+	if err != nil {
+
+	}
+}
+
+func (doc *DIDDocument) String() string {
+	return doc.Produce()
 }

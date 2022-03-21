@@ -1,3 +1,5 @@
+// util/hash.go
+
 package util
 
 import (
@@ -17,12 +19,4 @@ func MakeHashBase58(plain string) string {
 
 func MakeHashHex(plain string) string {
 	return hex.EncodeToString(MakeHash(plain))
-}
-
-func MakeSha256(plainText string) string {
-	hash := sha256.New()
-	hash.Write([]byte(plainText))
-
-	md := hash.Sum(nil)
-	return base58.Encode(md)
 }

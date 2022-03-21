@@ -5,17 +5,20 @@ import (
 	"github.com/comnics/did-example/util"
 )
 
-type DIDManager struct {
+type DID struct {
 	did    string
 	method string
 }
 
-func (d *DIDManager) MakeDID(method string, pbKey string) {
-	d.method = method
+func NewDID(method string, pbKey string) (did *DID) {
+	var newDid = new(DID)
+	newDid.method = method
 	specificIdentifier := util.MakeHashBase58(pbKey)
-	d.did = fmt.Sprintf("did:%s:%s", d.method, specificIdentifier)
+	newDid.did = fmt.Sprintf("did:%s:%s", method, specificIdentifier)
+
+	return newDid
 }
 
-func (d *DIDManager) String() string {
+func (d *DID) String() string {
 	return d.did
 }

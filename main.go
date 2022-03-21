@@ -31,16 +31,12 @@ func main() {
 	var ecdsa core.ECDSAManager // ecdsa := new(core.ECDSAManager)
 	ecdsa.Generate()
 
-	var did core.DIDManager
+	did := core.NewDID("comnic", ecdsa.PublicKeyBase58())
+	fmt.Printf("DID : [%s]\n", did)
 
-	did.MakeDID("comnic", ecdsa.PublicKeyBase58())
-	fmt.Printf("DID : [%s]\n", did.String())
+	didDocument := core.NewDIDDocument(did.String())
+	fmt.Printf("DID Document: %s", didDocument)
 
-	//
-	//didDocument := MakeDIDDocument(method, did)
-	//doc, _ := json.Marshal(didDocument)
-	//fmt.Printf("DID Document : [%s]\n", string(doc))
-	//
 	//// protobuf test
 	//testDid := pb.Did{Id: "12342", Desc: "abcde"}
 	//

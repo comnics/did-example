@@ -1,3 +1,5 @@
+// core/did.go
+
 package core
 
 import (
