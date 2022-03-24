@@ -30,6 +30,17 @@ type Signature struct {
 	S *big.Int
 }
 
+func NewEcdsa() (ecdsa *ECDSAManager) {
+	ecdsa = new(ECDSAManager)
+	err := ecdsa.Generate()
+	if err != nil {
+		log.Printf("Fail to ECDSA Generate.")
+		return nil
+	}
+
+	return
+}
+
 func (s Signature) String() string {
 	return s.R.String() + s.S.String()
 }
