@@ -1,0 +1,22 @@
+// protos/issuer.proto
+syntax = "proto3";
+
+option go_package = "github.com/comnics/did-example/protos";
+
+package issuer;
+
+service SimpleIssuer {
+  rpc IssueSimpleVC (MsgIssueVC) returns (MsgIssueVCResponse) {}
+}
+
+message MsgIssueVC {
+  string did = 1;
+  string nonce = 2;
+  string reqVP = 3;
+}
+
+message MsgIssueVCResponse {
+  string did = 1;
+  string nonce = 2;
+  string vc = 3;
+}
