@@ -7,6 +7,8 @@ import (
 )
 
 func TestVCStruct2(t *testing.T) {
+	//credentialSubject := make(map[string]interface{})
+
 	myVC := &VC{
 		Context: []string{
 			"https://www.w3.org/2018/credentials/v1",
@@ -16,16 +18,17 @@ func TestVCStruct2(t *testing.T) {
 		Type:         []string{"VerifiableCredential", "AlumniCredential"},
 		Issuer:       "https://example.edu/issuers/565049",
 		IssuanceDate: "2010-01-01T19:23:24Z",
-		CredentialSubject: CredentialSubject{
-			Id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
-			AlumniOf: AlumniOf{
-				Name: []Name{
+		CredentialSubject: map[string]interface{}{
+			"id": "1234567890",
+			"alumniOf": map[string]interface{}{
+				"id": "1234567",
+				"name": []map[string]string{
 					{
-						Value: "Example University",
-						Lang:  "en",
+						"value": "Example University",
+						"lang":  "en",
 					}, {
-						Value: "Exemple d'Université",
-						Lang:  "fr",
+						"value": "Exemple d'Université",
+						"lang":  "fr",
 					},
 				},
 			},

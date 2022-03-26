@@ -1,30 +1,18 @@
+// github.com/comnics/did-example/core/vc.go
+
 package core
 
+// https://www.w3.org/TR/vc-data-model
 type VC struct {
 	// Mendatory
 	Context []string `json:"@context"`
 
-	Id                string            `json:"id"`
-	Type              []string          `json:"type"`
-	Issuer            string            `json:"issuer"`
-	IssuanceDate      string            `json:"issuanceDate"`
-	CredentialSubject CredentialSubject `json:"credentialSubject"`
-	Proof             Proof             `json:"proof"`
-}
-
-type CredentialSubject struct {
-	Id       string   `json:"id"`
-	AlumniOf AlumniOf `json:"alumniOf"`
-}
-
-type AlumniOf struct {
-	Id   string `json:"id"`
-	Name []Name `json:"name"`
-}
-
-type Name struct {
-	Value string `json:"value"`
-	Lang  string `json:"lang"`
+	Id                string                 `json:"id"`
+	Type              []string               `json:"type"`
+	Issuer            string                 `json:"issuer"`
+	IssuanceDate      string                 `json:"issuanceDate"`
+	CredentialSubject map[string]interface{} `json:"credentialSubject"`
+	Proof             Proof                  `json:"proof"`
 }
 
 type Proof struct {
