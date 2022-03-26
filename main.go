@@ -34,7 +34,15 @@ func main() {
 	did := core.NewDID("comnic", ecdsa.PublicKeyBase58())
 	fmt.Printf("DID : [%s]\n", did)
 
-	didDocument := core.NewDIDDocument(did.String())
+	didDocumentAuth := []core.Authentication{
+		{
+			Id:                 "did:example:123456789abcdefghi#keys-1",
+			Type:               "Ed25519VerificationKey2020",
+			Controller:         "did:example:123456789abcdefghi",
+			PublicKeyMultibase: "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV",
+		},
+	}
+	didDocument := core.NewDIDDocument(did.String(), didDocumentAuth)
 	fmt.Printf("DID Document: %s", didDocument)
 
 	//// protobuf test
