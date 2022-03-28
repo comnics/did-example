@@ -36,10 +36,10 @@ func main() {
 
 	didDocumentAuth := []core.Authentication{
 		{
-			Id:                 "did:example:123456789abcdefghi#keys-1",
-			Type:               "Ed25519VerificationKey2020",
-			Controller:         "did:example:123456789abcdefghi",
-			PublicKeyMultibase: "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV",
+			Id:              fmt.Sprintf("%s#keys-1", did),
+			Type:            "EcdsaSecp256k1VerificationKey2019",
+			Controller:      did.String(),
+			PublicKeyBase58: did.String(),
 		},
 	}
 	didDocument := core.NewDIDDocument(did.String(), didDocumentAuth)

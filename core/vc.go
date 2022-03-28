@@ -4,7 +4,9 @@ package core
 
 import (
 	"crypto/ecdsa"
+	"crypto/x509"
 	"fmt"
+	"github.com/btcsuite/btcutil/base58"
 	"strings"
 	"time"
 
@@ -30,6 +32,7 @@ type Proof struct {
 	Created            string `json:"created"`
 	ProofPurpose       string `json:"proofPurpose"`
 	VerificationMethod string `json:"verificationMethod"`
+	ProofValue         string `json:"proofValue"`
 	Jws                string `json:"jws"`
 }
 
@@ -83,7 +86,15 @@ func (vc *VC) CreateJWT(pvKey *ecdsa.PrivateKey) string {
 
 func ParseJwt(tokenString string) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("AllYourBase"), nil
+		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		did := token.Header["kid"].(string)
+		pbKeyBase58 := did // getPbKey(did, "") //DID를 통해 DID-Document의 pbKey를 구한다.
+		pbKey, _ := x509.ParsePKIXPublicKey(base58.Decode(pbKeyBase58))
+
+		return pbKey, nil
 	})
 
 	if claims, ok := token.Claims.(*JwtClaims); ok && token.Valid {

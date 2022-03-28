@@ -34,11 +34,11 @@ func TestVCStruct2(t *testing.T) {
 			},
 		},
 		Proof: Proof{
-			Type:               "RsaSignature2018",
+			Type:               "EcdsaSecp256k1VerificationKey2019",
 			Created:            "2017-06-18T21:19:10Z",
 			ProofPurpose:       "assertionMethod",
 			VerificationMethod: "https://example.edu/issuers/565049#key-1",
-			Jws:                "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yAV-TVkIEq_PbChOMqsLfRoPsnsgw5WEuts01mq-pQy7UJiN5mgRxD-WUcX16dUEMGlv50aqzpqh4Qktb3rk-BuQy72IFLOqV0G_zS245-kronKb78cPN25DGlcTwLtjPAYuNzVBAh4vGHSrQyHUdBBPM",
+			ProofValue:         "z58DAdFfa9SkqZMVPxAQpic7ndSayn1PzZs6ZjWp1CktyGesjuTSwRdoWhAfGFCF5bppETSTojQCrfFPP2oumHKtz",
 		},
 	}
 
