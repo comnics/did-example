@@ -30,9 +30,10 @@ type DIDDocument struct {
 }
 
 type VerificationMethod struct {
-	Id         string `json:"id"`
-	Type       string `json:"type"`
-	Controller string `json:"controller"`
+	Id                 string `json:"id"`
+	Type               string `json:"type"`
+	Controller         string `json:"controller"`
+	PublicKeyMultibase string `json:"PublicKeyMultibase,omitempty"`
 }
 
 type Authentication struct {
@@ -49,11 +50,11 @@ type Service struct {
 	ServiceEndpoint string `json:"serviceEndpoint"`
 }
 
-func NewDIDDocument(did string, auth []Authentication) (doc *DIDDocument) {
+func NewDIDDocument(did string, verificationMethod []VerificationMethod) (doc *DIDDocument) {
 	var docTmp = new(DIDDocument)
 	docTmp.Context = []string{"https://www.w3.org/ns/did/v1"}
 	docTmp.Id = did
-	docTmp.Authentication = auth
+	docTmp.VerificationMethod = verificationMethod
 
 	return docTmp
 }
