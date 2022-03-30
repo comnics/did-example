@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/multiformats/go-multibase"
 	"log"
 	"math/big"
 )
@@ -124,6 +125,26 @@ func (e *ECDSAManager) PublicKeyBase58() string {
 	}
 
 	return base58.Encode(publicKeyBytes)
+}
+
+func (e *ECDSAManager) PublicKeyMultibase() string {
+	if e.PublicKey == nil {
+		return ""
+	}
+
+	publicKeyBytes, err := x509.MarshalPKIXPublicKey(e.PublicKey)
+
+	if err != nil {
+		log.Printf("error occured: %v", err.Error())
+		return ""
+	}
+
+	str, err := multibase.Encode(multibase.Base58BTC, publicKeyBytes)
+	if err != nil {
+		log.Printf("error occured: %v", err.Error())
+		return ""
+	}
+	return str
 }
 
 func (e *ECDSAManager) PrintPublicKey() {
