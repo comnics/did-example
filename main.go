@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/comnics/did-example/core"
 	"github.com/comnics/did-example/util"
+	"time"
 )
 
 // Simple KMS
@@ -28,21 +29,22 @@ func main() {
 	fmt.Println("### Start Main() ###")
 
 	// ECDSA secp256k1
-	var ecdsa core.ECDSAManager // ecdsa := new(core.ECDSAManager)
-	ecdsa.Generate()
+	//var ecdsa *core.ECDSAManager // ecdsa := new(core.ECDSAManager)
+	ecdsa := core.NewEcdsa()
 
 	did := core.NewDID("comnic", ecdsa.PublicKeyBase58())
 	fmt.Printf("DID : [%s]\n", did)
 
-	didDocumentAuth := []core.Authentication{
+	verificationId := fmt.Sprintf("%s#keys-1", did)
+	verificationMethod := []core.VerificationMethod{
 		{
-			Id:              fmt.Sprintf("%s#keys-1", did),
-			Type:            "EcdsaSecp256k1VerificationKey2019",
-			Controller:      did.String(),
-			PublicKeyBase58: did.String(),
+			Id:                 verificationId,
+			Type:               "EcdsaSecp256k1VerificationKey2019",
+			Controller:         did.String(),
+			PublicKeyMultibase: ecdsa.PublicKeyMultibase(),
 		},
 	}
-	didDocument := core.NewDIDDocument(did.String(), didDocumentAuth)
+	didDocument := core.NewDIDDocument(did.String(), verificationMethod)
 	fmt.Printf("DID Document: %s\n", didDocument)
 
 	// @@@@@@@@@@@@@@@@@@@
@@ -55,7 +57,7 @@ func main() {
 		Id:           "http://example.edu/credentials/1872",
 		Type:         []string{"VerifiableCredential", "AlumniCredential"},
 		Issuer:       "https://example.edu/issuers/565049",
-		IssuanceDate: "2010-01-01T19:23:24Z",
+		IssuanceDate: time.Now().Format(time.RFC3339), //"2010-01-01T19:23:24Z",
 		CredentialSubject: map[string]interface{}{
 			"id": "1234567890",
 			"alumniOf": map[string]interface{}{
@@ -71,15 +73,15 @@ func main() {
 				},
 			},
 		},
-		Proof: core.Proof{
+		Proof: &core.Proof{
 			Type:               "RsaSignature2018",
 			Created:            "2017-06-18T21:19:10Z",
 			ProofPurpose:       "assertionMethod",
-			VerificationMethod: "https://example.edu/issuers/565049#key-1",
+			VerificationMethod: verificationId,
 			Jws:                "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yAV-TVkIEq_PbChOMqsLfRoPsnsgw5WEuts01mq-pQy7UJiN5mgRxD-WUcX16dUEMGlv50aqzpqh4Qktb3rk-BuQy72IFLOqV0G_zS245-kronKb78cPN25DGlcTwLtjPAYuNzVBAh4vGHSrQyHUdBBPM",
 		},
 	}
-	token := myVC.CreateJWT(ecdsa.PrivateKey)
+	token := myVC.GenerateJWT(ecdsa.PrivateKey)
 	fmt.Printf("\nVC JWT Token: %s\n", token)
 
 	res, _ := core.VerifyJwt(token, ecdsa.PublicKey)

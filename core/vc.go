@@ -7,9 +7,11 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/google/uuid"
 	"strings"
 	"time"
 
+	"github.com/getlantern/deepcopy"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -19,21 +21,21 @@ type VC struct {
 	// Mendatory
 	Context []string `json:"@context"`
 
-	Id                string                 `json:"id"`
-	Type              []string               `json:"type"`
-	Issuer            string                 `json:"issuer"`
-	IssuanceDate      string                 `json:"issuanceDate"`
-	CredentialSubject map[string]interface{} `json:"credentialSubject"`
-	Proof             Proof                  `json:"proof"`
+	Id                string                 `json:"id,omitempty"`
+	Type              []string               `json:"type,omitempty"`
+	Issuer            string                 `json:"issuer,omitempty"`
+	IssuanceDate      string                 `json:"issuanceDate,omitempty"`
+	CredentialSubject map[string]interface{} `json:"credentialSubject,omitempty"`
+	Proof             *Proof                 `json:"proof,omitempty"`
 }
 
 type Proof struct {
-	Type               string `json:"type"`
-	Created            string `json:"created"`
-	ProofPurpose       string `json:"proofPurpose"`
-	VerificationMethod string `json:"verificationMethod"`
-	ProofValue         string `json:"proofValue"`
-	Jws                string `json:"jws"`
+	Type               string `json:"type,omitempty"`
+	Created            string `json:"created,omitempty"`
+	ProofPurpose       string `json:"proofPurpose,omitempty"`
+	VerificationMethod string `json:"verificationMethod,omitempty"`
+	ProofValue         string `json:"proofValue,omitempty"`
+	Jws                string `json:"jws,omitempty"`
 }
 
 // JWT를 위한 claim
@@ -41,7 +43,7 @@ type JwtClaims struct {
 	jwt.StandardClaims
 
 	Nonce string
-	Vc    VC `json:"vc"`
+	Vc    VC `json:"vc,omitempty"`
 }
 
 type VCInterface interface {
@@ -49,16 +51,26 @@ type VCInterface interface {
 	Verify() bool
 }
 
-// VC를 JTW로 생성하고 string으로 반환한다.
-func (vc *VC) CreateJWT(pvKey *ecdsa.PrivateKey) string {
+func (vc *VC) GenerateString(pvKey *ecdsa.PrivateKey) string {
+	return ""
+}
 
+// VC를 JTW로 생성하고 string으로 반환한다.
+// JTW의 경우 JWS로 증명되기에 Proofs를 빼고, JWT와 중복되는 properties를 제거한다.
+func (vc *VC) GenerateJWT(pvKey *ecdsa.PrivateKey) string {
 	aud := ""
-	exp := time.Now().Add(time.Minute * 5).Unix()
-	jti := "089a411f-0d88-450f-8cc0-1a3acfebecd3"
-	iat := time.Now().Unix()
+	exp := time.Now().Add(time.Minute * 5).Unix()       //만료 시간. 현재 + 5분
+	jti := uuid.NewString()                             // JWT ID
+	t, err := time.Parse(time.RFC3339, vc.IssuanceDate) //unixtime으로 바꾸기 위해.
+	iat := t.Unix()
 	nbf := iat
-	iss := "http://google.com/issuer"
-	sub := ""
+	iss := vc.Issuer
+	sub := "Verifiable Credential"
+
+	// Proof를 제거하고 JWT를 만들기 위해 복제한다.
+	vcTmp := new(VC)
+	deepcopy.Copy(vcTmp, vc)
+	vcTmp.Proof = nil
 
 	jwtClaims := JwtClaims{
 		jwt.StandardClaims{
@@ -71,9 +83,11 @@ func (vc *VC) CreateJWT(pvKey *ecdsa.PrivateKey) string {
 			Subject:   sub,
 		},
 		"qwasd!234",
-		*vc,
+		*vcTmp,
 	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwtClaims)
+	token.Header["kid"] = vc.Proof.VerificationMethod
 
 	tokenString, err := token.SignedString(pvKey)
 
