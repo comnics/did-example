@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/comnics/did-example/core"
 	"github.com/comnics/did-example/util"
-	"time"
+	"os"
 )
 
 // Simple KMS
@@ -49,16 +49,11 @@ func main() {
 
 	// @@@@@@@@@@@@@@@@@@@
 
-	myVC := &core.VC{
-		Context: []string{
-			"https://www.w3.org/2018/credentials/v1",
-			"https://www.w3.org/2018/credentials/v2",
-		},
-		Id:           "http://example.edu/credentials/1872",
-		Type:         []string{"VerifiableCredential", "AlumniCredential"},
-		Issuer:       "https://example.edu/issuers/565049",
-		IssuanceDate: time.Now().Format(time.RFC3339), //"2010-01-01T19:23:24Z",
-		CredentialSubject: map[string]interface{}{
+	vc, err := core.NewVC(
+		"1234567890",
+		[]string{"VerifiableCredential", "AlumniCredential"},
+		did.String(),
+		map[string]interface{}{
 			"id": "1234567890",
 			"alumniOf": map[string]interface{}{
 				"id": "1234567",
@@ -73,15 +68,14 @@ func main() {
 				},
 			},
 		},
-		Proof: &core.Proof{
-			Type:               "RsaSignature2018",
-			Created:            "2017-06-18T21:19:10Z",
-			ProofPurpose:       "assertionMethod",
-			VerificationMethod: verificationId,
-			Jws:                "eyJhbGciOiJSUzI1NiIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..TCYt5XsITJX1CxPCT8yAV-TVkIEq_PbChOMqsLfRoPsnsgw5WEuts01mq-pQy7UJiN5mgRxD-WUcX16dUEMGlv50aqzpqh4Qktb3rk-BuQy72IFLOqV0G_zS245-kronKb78cPN25DGlcTwLtjPAYuNzVBAh4vGHSrQyHUdBBPM",
-		},
+	)
+
+	if err != nil {
+		fmt.Println("Failed creation VC.")
+		os.Exit(0)
 	}
-	token := myVC.GenerateJWT(ecdsa.PrivateKey)
+
+	token := vc.GenerateJWT(verificationId, ecdsa.PrivateKey)
 	fmt.Printf("\nVC JWT Token: %s\n", token)
 
 	res, _ := core.VerifyJwt(token, ecdsa.PublicKey)

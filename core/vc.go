@@ -51,13 +51,28 @@ type VCInterface interface {
 	Verify() bool
 }
 
+func NewVC(id string, typ []string, issuer string, credentialSubject map[string]interface{}) (*VC, error) {
+	newVC := &VC{
+		Context: []string{
+			"https://www.w3.org/2018/credentials/v1",
+			"https://www.w3.org/2018/credentials/v2",
+		},
+		Id:                id,
+		Type:              typ,
+		Issuer:            issuer,
+		IssuanceDate:      time.Now().Format(time.RFC3339), //"2010-01-01T19:23:24Z",
+		CredentialSubject: credentialSubject,
+	}
+	return newVC, nil
+}
+
 func (vc *VC) GenerateString(pvKey *ecdsa.PrivateKey) string {
 	return ""
 }
 
 // VC를 JTW로 생성하고 string으로 반환한다.
 // JTW의 경우 JWS로 증명되기에 Proofs를 빼고, JWT와 중복되는 properties를 제거한다.
-func (vc *VC) GenerateJWT(pvKey *ecdsa.PrivateKey) string {
+func (vc *VC) GenerateJWT(verificationId string, pvKey *ecdsa.PrivateKey) string {
 	aud := ""
 	exp := time.Now().Add(time.Minute * 5).Unix()       //만료 시간. 현재 + 5분
 	jti := uuid.NewString()                             // JWT ID
@@ -87,7 +102,7 @@ func (vc *VC) GenerateJWT(pvKey *ecdsa.PrivateKey) string {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwtClaims)
-	token.Header["kid"] = vc.Proof.VerificationMethod
+	token.Header["kid"] = verificationId
 
 	tokenString, err := token.SignedString(pvKey)
 
@@ -96,6 +111,13 @@ func (vc *VC) GenerateJWT(pvKey *ecdsa.PrivateKey) string {
 	}
 
 	return tokenString
+}
+
+// VC의 claim에 Proof를 생성한다.
+func (vc *VC) GenerateProof() string {
+
+	vc.Proof = &Proof{}
+	return ""
 }
 
 func ParseJwt(tokenString string) {

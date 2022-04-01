@@ -4,7 +4,32 @@ import (
 	"encoding/json"
 	"fmt"
 	"testing"
+	"time"
 )
+
+func TestVCGenerate(t *testing.T) {
+	credentialSubject := map[string]interface{}{
+		"id": "1234567890",
+		"alumniOf": map[string]interface{}{
+			"id": "1234567",
+			"name": []map[string]string{
+				{
+					"value": "Example University",
+					"lang":  "en",
+				}, {
+					"value": "Exemple d'Université",
+					"lang":  "fr",
+				},
+			},
+		},
+	}
+
+	_, err := NewVC("id", []string{"type1", "type2"}, "issuer", credentialSubject)
+	if err != nil {
+		t.Error("Failed creation VC")
+	}
+
+}
 
 func TestVCStruct2(t *testing.T) {
 	//credentialSubject := make(map[string]interface{})
@@ -17,7 +42,7 @@ func TestVCStruct2(t *testing.T) {
 		Id:           "http://example.edu/credentials/1872",
 		Type:         []string{"VerifiableCredential", "AlumniCredential"},
 		Issuer:       "https://example.edu/issuers/565049",
-		IssuanceDate: "2010-01-01T19:23:24Z",
+		IssuanceDate: time.Now().Format(time.RFC3339),
 		CredentialSubject: map[string]interface{}{
 			"id": "1234567890",
 			"alumniOf": map[string]interface{}{
@@ -33,9 +58,9 @@ func TestVCStruct2(t *testing.T) {
 				},
 			},
 		},
-		Proof: Proof{
+		Proof: &Proof{
 			Type:               "EcdsaSecp256k1VerificationKey2019",
-			Created:            "2017-06-18T21:19:10Z",
+			Created:            time.Now().Format(time.RFC3339),
 			ProofPurpose:       "assertionMethod",
 			VerificationMethod: "https://example.edu/issuers/565049#key-1",
 			ProofValue:         "z58DAdFfa9SkqZMVPxAQpic7ndSayn1PzZs6ZjWp1CktyGesjuTSwRdoWhAfGFCF5bppETSTojQCrfFPP2oumHKtz",
