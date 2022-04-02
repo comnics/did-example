@@ -55,6 +55,8 @@ func (issuer *server) generateDID() {
 	didDocument := core.NewDIDDocument(issuerDid.String(), verificationMethod)
 	issuer.didDocument = didDocument
 
+	fmt.Printf("검증용 issuer pbKey: %s\n", issuer.didDocument.VerificationMethod[0].PublicKeyMultibase)
+
 	registerDid(issuerDid.String(), didDocument)
 }
 
