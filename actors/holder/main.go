@@ -64,6 +64,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
+	// Issuer로 부터 VC를 요청한다.
 	res, err := c.IssueSimpleVC(ctx, &protos.MsgIssueVC{
 		Did:   "76f5d6b9-9429-477e-9bc5-91bf2769ebbe",
 		Nonce: "100001",

@@ -78,7 +78,7 @@ func main() {
 	token := vc.GenerateJWT(verificationId, ecdsa.PrivateKey)
 	fmt.Printf("\nVC JWT Token: %s\n", token)
 
-	res, _ := core.VerifyJwt(token, ecdsa.PublicKey)
+	res, _ := vc.VerifyJwt(token, ecdsa.PublicKey)
 
 	if res {
 		fmt.Println("VC is verified.")
