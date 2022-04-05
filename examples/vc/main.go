@@ -58,7 +58,7 @@ func main() {
 	token := vc.GenerateJWT(verificationId, issuerKeyEcdsa.PrivateKey)
 
 	// 생성된 VC를 검증한다.(public key를 사용해서 검증)
-	res, _ := core.VerifyJwt(token, issuerKeyEcdsa.PublicKey)
+	res, _ := vc.VerifyJwt(token, issuerKeyEcdsa.PublicKey)
 
 	if res {
 		fmt.Println("VC is verified.")

@@ -141,6 +141,15 @@ func ParseJwt(tokenString string) {
 
 }
 
+func (vc *VC) VerifyJwt(token string, pbKey *ecdsa.PublicKey) (bool, error) {
+	//parts := strings.Split(token, ".")
+	//err := jwt.SigningMethodES256.Verify(strings.Join(parts[0:2], "."), parts[2], pbKey)
+	//if err != nil {
+	//	return false, nil
+	//}
+	return VerifyJwt(token, pbKey)
+}
+
 func VerifyJwt(token string, pbKey *ecdsa.PublicKey) (bool, error) {
 	parts := strings.Split(token, ".")
 	err := jwt.SigningMethodES256.Verify(strings.Join(parts[0:2], "."), parts[2], pbKey)
