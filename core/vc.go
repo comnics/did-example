@@ -6,8 +6,9 @@ import (
 	"crypto/ecdsa"
 	"crypto/x509"
 	"fmt"
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/google/uuid"
+	"github.com/multiformats/go-multibase"
+	"log"
 	"strings"
 	"time"
 
@@ -120,23 +121,47 @@ func (vc *VC) GenerateProof() string {
 	return ""
 }
 
-func ParseJwt(tokenString string) {
+// jwt를 검증한다.
+// header에서 kid를 추출하고 DID를 추출한다.
+// DID를 Resolve해서 DID Document를 받아온다.
+// DID도큐먼트의 key ID를 기준으로 public key의 값을 가져와야 하나,
+// 여기서는 1개만 존재한다고 가정하고 첫번째를 사용해서 public key를 만들어 사용한다.
+func ParseJwt(tokenString string) (bool, *JwtClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		did := token.Header["kid"].(string)
-		pbKeyBase58 := did // getPbKey(did, "") //DID를 통해 DID-Document의 pbKey를 구한다.
-		pbKey, _ := x509.ParsePKIXPublicKey(base58.Decode(pbKeyBase58))
+		//DID를 추출한다.
+		parts := strings.Split(token.Header["kid"].(string), "#")
+		did := parts[0]
+
+		//Resolve한다.
+		didDocumentStr, err := ResolveDid(did)
+		if err != nil {
+			log.Printf("Failed to Resolve DID.\nError: %x\n", err)
+		}
+
+		//Json string을 DID Document 객체로 생성한다.
+		didDocument, err := NewDIDDocumentForString(didDocumentStr)
+		if err != nil {
+			log.Printf("Failed generate DID Document from string.\nError: %x\n", err)
+		}
+		// 첫 번째를 사용한다고 가정한다.
+		// TODO: 키 ID(위의 kid)에 해당하는 키 값 구하기.
+		pbKeyBaseMultibase := didDocument.VerificationMethod[0].PublicKeyMultibase
+		_, bytePubKey, err := multibase.Decode(pbKeyBaseMultibase)
+		pbKey, err := x509.ParsePKIXPublicKey(bytePubKey)
 
 		return pbKey, nil
 	})
 
 	if claims, ok := token.Claims.(*JwtClaims); ok && token.Valid {
-		fmt.Printf("%v %v", claims.Vc, claims.Issuer)
+		//fmt.Printf("%v %v", claims.Vc, claims.Issuer)
+		return true, claims, nil
 	} else {
 		fmt.Println(err)
+		return false, nil, err
 	}
 
 }

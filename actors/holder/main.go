@@ -2,15 +2,11 @@ package main
 
 import (
 	"context"
-	"crypto/ecdsa"
-	"crypto/x509"
 	"fmt"
 	"github.com/comnics/did-example/core"
 	"github.com/comnics/did-example/protos"
-	"github.com/multiformats/go-multibase"
 	"google.golang.org/grpc"
 	"log"
-	"os"
 	"time"
 )
 
@@ -18,13 +14,15 @@ const ISSUER_PB_KEY = "zaSq9DsNNvGhYxYyqA9wd2eduEAZ5AXWgJTbTJJNuMGAQke9NvqhBfPFL
 
 type client struct {
 	protos.SimpleIssuerClient
+}
 
+type Holder struct {
 	kms         *core.ECDSAManager
 	did         *core.DID
 	didDocument *core.DIDDocument
 }
 
-func (holder *client) generateDID() {
+func (holder *Holder) generateDID() {
 	// 키생성(ECDSA) - 향후 KMS로 대체.
 	holder.kms = core.NewEcdsa()
 
@@ -49,14 +47,32 @@ func (holder *client) generateDID() {
 	registerDid(issuerDid.String(), didDocument)
 }
 
-func registerDid(did string, document *core.DIDDocument) {
-
+func registerDid(did string, document *core.DIDDocument) error {
+	err := core.RegisterDid(did, document.String())
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {
+
+	// New Holder
+	holder := new(Holder)
+	holder.generateDID()
+
+	// Test
+	//didStr, _ := core.ResolveDid(holder.did.String())
+	//fmt.Printf("Did Resolve: %s\n", didStr)
+	//
+	//didDoc := new(core.DIDDocument)
+	//didDoc.Consume(didStr)
+	//fmt.Printf("Did VerificationMethod: %+v\n", didDoc.VerificationMethod)
+
+	// Connect Issuer
 	conn, err := grpc.Dial("localhost:1021", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Issuer not connect: %v", err)
 	}
 	defer conn.Close()
 	c := protos.NewSimpleIssuerClient(conn)
@@ -66,9 +82,9 @@ func main() {
 
 	// Issuer로 부터 VC를 요청한다.
 	res, err := c.IssueSimpleVC(ctx, &protos.MsgIssueVC{
-		Did:   "76f5d6b9-9429-477e-9bc5-91bf2769ebbe",
+		Did:   holder.did.String(),
 		Nonce: "100001",
-		ReqVP: "{'a': 'b'}",
+		ReqVP: "{'Korea eID Credential': '12345'}",
 	})
 	if err != nil {
 		log.Fatalf("could not request: %v", err)
@@ -76,18 +92,20 @@ func main() {
 
 	fmt.Printf("Result: %s\n", res)
 
-	_, bytePubKey, err := multibase.Decode(ISSUER_PB_KEY)
-	pbKey, err := x509.ParsePKIXPublicKey(bytePubKey)
-	if err != nil {
-		log.Fatalf("key is not valid.")
-		os.Exit(0)
-	}
+	// Verify VC
+	//_, bytePubKey, err := multibase.Decode(ISSUER_PB_KEY)
+	//pbKey, err := x509.ParsePKIXPublicKey(bytePubKey)
+	//if err != nil {
+	//	log.Fatalf("key is not valid.")
+	//	os.Exit(0)
+	//}
 
-	verify, _ := core.VerifyJwt(res.GetVc(), pbKey.(*ecdsa.PublicKey))
+	//verify, _ := core.VerifyJwt(res.GetVc(), pbKey.(*ecdsa.PublicKey))
+	verify, _, _ := core.ParseJwt(res.GetVc())
+
 	if verify {
 		fmt.Println("VC is verified.")
 	} else {
 		fmt.Println("VC is NOT verified.")
 	}
-
 }
