@@ -78,3 +78,13 @@ func (doc *DIDDocument) Consume(str string) {
 func (doc *DIDDocument) String() string {
 	return doc.Produce()
 }
+
+func NewDIDDocumentForString(docStr string) (didDoc *DIDDocument, err error) {
+	didDoc = new(DIDDocument)
+	e := json.Unmarshal([]byte(docStr), didDoc)
+	if e != nil {
+		return nil, e
+	}
+
+	return didDoc, nil
+}

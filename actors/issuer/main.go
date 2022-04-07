@@ -14,17 +14,21 @@ import (
 type server struct {
 	protos.UnimplementedSimpleIssuerServer
 
+	issuer *Issuer
+}
+
+type Issuer struct {
 	kms         *core.ECDSAManager
 	did         *core.DID
 	didDocument *core.DIDDocument
 }
 
-func (issuer *server) IssueSimpleVC(_ context.Context, msg *protos.MsgIssueVC) (*protos.MsgIssueVCResponse, error) {
+func (server *server) IssueSimpleVC(_ context.Context, msg *protos.MsgIssueVC) (*protos.MsgIssueVCResponse, error) {
 	log.Printf("IssueSimpleVC MSG: %+v \n", msg)
 
 	response := new(protos.MsgIssueVCResponse)
 
-	vcToken, err := issuer.generateSampleVC()
+	vcToken, err := server.issuer.generateSampleVC()
 	if err != nil {
 
 	}
@@ -33,7 +37,7 @@ func (issuer *server) IssueSimpleVC(_ context.Context, msg *protos.MsgIssueVC) (
 	return response, nil
 }
 
-func (issuer *server) generateDID() {
+func (issuer *Issuer) generateDID() {
 	// 키생성(ECDSA) - 향후 KMS로 대체.
 	issuer.kms = core.NewEcdsa()
 
@@ -60,7 +64,7 @@ func (issuer *server) generateDID() {
 	registerDid(issuerDid.String(), didDocument)
 }
 
-func (issuer *server) generateSampleVC() (string, error) {
+func (issuer *Issuer) generateSampleVC() (string, error) {
 	// VC 생성.
 	vc, err := core.NewVC(
 		"1234567890",
@@ -93,20 +97,31 @@ func (issuer *server) generateSampleVC() (string, error) {
 	return token, nil
 }
 
-func registerDid(did string, document *core.DIDDocument) {
+func registerDid(did string, document *core.DIDDocument) error {
+	err := core.RegisterDid(did, document.String())
+	if err != nil {
+		return err
+	}
+	return nil
 
 }
 
 func main() {
+
+	// New Issuer
+	issuer := new(Issuer)
+	issuer.generateDID()
+
 	lis, err := net.Listen("tcp", "0.0.0.0:1021")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	issuerServer := server{}
+	issuerServer.issuer = issuer
+
 	s := grpc.NewServer()
 	protos.RegisterSimpleIssuerServer(s, &issuerServer)
-	issuerServer.generateDID()
 
 	log.Printf("Issuer Server is listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
