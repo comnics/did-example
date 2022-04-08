@@ -126,7 +126,7 @@ func (vc *VC) GenerateProof() string {
 // DID를 Resolve해서 DID Document를 받아온다.
 // DID도큐먼트의 key ID를 기준으로 public key의 값을 가져와야 하나,
 // 여기서는 1개만 존재한다고 가정하고 첫번째를 사용해서 public key를 만들어 사용한다.
-func ParseJwt(tokenString string) (bool, *JwtClaims, error) {
+func Deprecated_ParseJwt(tokenString string) (bool, *JwtClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -167,19 +167,5 @@ func ParseJwt(tokenString string) (bool, *JwtClaims, error) {
 }
 
 func (vc *VC) VerifyJwt(token string, pbKey *ecdsa.PublicKey) (bool, error) {
-	//parts := strings.Split(token, ".")
-	//err := jwt.SigningMethodES256.Verify(strings.Join(parts[0:2], "."), parts[2], pbKey)
-	//if err != nil {
-	//	return false, nil
-	//}
 	return VerifyJwt(token, pbKey)
-}
-
-func VerifyJwt(token string, pbKey *ecdsa.PublicKey) (bool, error) {
-	parts := strings.Split(token, ".")
-	err := jwt.SigningMethodES256.Verify(strings.Join(parts[0:2], "."), parts[2], pbKey)
-	if err != nil {
-		return false, nil
-	}
-	return true, nil
 }

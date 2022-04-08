@@ -19,6 +19,8 @@ func byte2string(b []byte) string {
 }
 
 func (server *resolverServer) ResolveDid(ctx context.Context, req *protos.ResolverRequest) (*protos.ResolverResponse, error) {
+	log.Printf("Resolve DID: %s\n", req.Did)
+
 	db, err := leveldb.OpenFile("did_db/dids", nil)
 	if err != nil {
 		panic(err)

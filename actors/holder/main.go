@@ -90,22 +90,16 @@ func main() {
 		log.Fatalf("could not request: %v", err)
 	}
 
-	fmt.Printf("Result: %s\n", res)
+	// VC를 검증한다.
+	verify, claims, _ := core.ParseAndVerifyJwtForVC(res.GetVc())
 
-	// Verify VC
-	//_, bytePubKey, err := multibase.Decode(ISSUER_PB_KEY)
-	//pbKey, err := x509.ParsePKIXPublicKey(bytePubKey)
-	//if err != nil {
-	//	log.Fatalf("key is not valid.")
-	//	os.Exit(0)
-	//}
-
-	//verify, _ := core.VerifyJwt(res.GetVc(), pbKey.(*ecdsa.PublicKey))
-	verify, _, _ := core.ParseJwt(res.GetVc())
-
-	if verify {
-		fmt.Println("VC is verified.")
-	} else {
-		fmt.Println("VC is NOT verified.")
+	if !verify {
+		log.Fatal("VC is NOT verified.")
 	}
+
+	fmt.Println("VC is verified.")
+	fmt.Println("claims Issuer: ", claims.Issuer)
+
+	// send VP to Verifier.
+
 }
