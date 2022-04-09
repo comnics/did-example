@@ -105,7 +105,6 @@ func ParseAndVerifyJwtForVP(tokenString string) (bool, *JwtClaimsForVP, error) {
 			vcList := vpMapClaims.VerifiableCredential
 
 			for idx, vcToken := range vcList {
-				//TODO: 각각의 VC를 다시 검증해야 한다.
 				fmt.Printf("VC[%d]: %s", idx, vcToken)
 				verify, _, err := ParseAndVerifyJwtForVC(vcToken)
 				if !verify || err != nil {
