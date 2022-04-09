@@ -7,6 +7,7 @@ import (
 	"github.com/comnics/did-example/protos"
 	"google.golang.org/grpc"
 	"log"
+	"os"
 	"time"
 )
 
@@ -55,6 +56,32 @@ func registerDid(did string, document *core.DIDDocument) error {
 	return nil
 }
 
+func SubmitVP(vpToken string) error {
+	conn, err := grpc.Dial("localhost:1022", grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("Verifier not connect: %v", err)
+		return nil
+	}
+	defer conn.Close()
+	c := protos.NewVerifierClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	// Issuer로 부터 VC를 요청한다.
+	res, err := c.SubmitVP(ctx, &protos.SubmitVPRequest{
+		Vp: vpToken,
+	})
+	if err != nil {
+		log.Fatalf("could not request: %v", err)
+		return nil
+	}
+
+	fmt.Printf("Verifier's response: %s\n", res.Result)
+
+	return nil
+}
+
 func main() {
 
 	// New Holder
@@ -91,7 +118,8 @@ func main() {
 	}
 
 	// VC를 검증한다.
-	verify, claims, _ := core.ParseAndVerifyJwtForVC(res.GetVc())
+	vcToken := res.GetVc()
+	verify, claims, _ := core.ParseAndVerifyJwtForVC(vcToken)
 
 	if !verify {
 		log.Fatal("VC is NOT verified.")
@@ -101,5 +129,19 @@ func main() {
 	fmt.Println("claims Issuer: ", claims.Issuer)
 
 	// send VP to Verifier.
+
+	vcList := []string{}
+	vcList = append(vcList, vcToken)
+
+	vp, err := core.NewVP("", []string{"", ""}, "", vcList)
+	if err != nil {
+		fmt.Println("ERROR")
+		os.Exit(0)
+	}
+
+	vpToken := vp.GenerateJWT(holder.didDocument.VerificationMethod[0].Id, holder.kms.PrivateKey)
+	fmt.Printf("VP: %s\n", vpToken)
+
+	SubmitVP(vpToken)
 
 }
