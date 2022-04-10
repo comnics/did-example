@@ -42,7 +42,7 @@ func (issuer *Issuer) generateDID() {
 	issuer.kms = core.NewEcdsa()
 
 	// DID 생성.
-	issuerDid := core.NewDID("comnic", issuer.kms.PublicKeyBase58())
+	issuerDid, _ := core.NewDID("comnic", issuer.kms.PublicKeyBase58())
 
 	issuer.did = issuerDid
 

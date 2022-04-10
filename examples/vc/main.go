@@ -12,7 +12,7 @@ func main() {
 	issuerKeyEcdsa := core.NewEcdsa()
 
 	// DID 생성.
-	issuerDid := core.NewDID("comnic", issuerKeyEcdsa.PublicKeyBase58())
+	issuerDid, _ := core.NewDID("comnic", issuerKeyEcdsa.PublicKeyBase58())
 
 	// DID Document 생성.
 	verificationId := fmt.Sprintf("%s#keys-1", issuerDid)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/comnics/did-example/config"
 	"github.com/comnics/did-example/protos"
 	"google.golang.org/grpc"
 	"log"
@@ -11,7 +12,7 @@ import (
 )
 
 func RegisterDid(did string, didDocument string) error {
-	conn, err := grpc.Dial("localhost:9000", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(config.SystemConfig.RegistrarAddr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Printf("Registrar not connect: %v\n", err)
 		return errors.New(fmt.Sprintf("Registrar not connect: %v", err))
@@ -29,13 +30,13 @@ func RegisterDid(did string, didDocument string) error {
 		return errors.New("Failed to register DID.")
 	}
 
-	fmt.Printf("Result: %s\n", res)
+	fmt.Printf("Registrar Response: %s\n", res)
 
 	return nil
 }
 
 func ResolveDid(did string) (string, error) {
-	conn, err := grpc.Dial("localhost:9001", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.Dial(config.SystemConfig.ResolverAddr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Printf("Resolver not connect: %v\n", err)
 		return "", errors.New(fmt.Sprintf("Resolver not connect: %v", err))

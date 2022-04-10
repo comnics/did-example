@@ -32,7 +32,7 @@ func main() {
 	//var ecdsa *core.ECDSAManager // ecdsa := new(core.ECDSAManager)
 	ecdsa := core.NewEcdsa()
 
-	did := core.NewDID("comnic", ecdsa.PublicKeyBase58())
+	did, _ := core.NewDID("comnic", ecdsa.PublicKeyBase58())
 	fmt.Printf("DID : [%s]\n", did)
 
 	verificationId := fmt.Sprintf("%s#keys-1", did)
