@@ -1,0 +1,6 @@
+{
+  "issuer_addr": "localhost:1021",
+  "verifier_addr": "localhost:1022",
+  "registrar_addr": "localhost:9000",
+  "resolver_addr": "localhost:9001"
+}
