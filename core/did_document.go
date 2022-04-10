@@ -1,4 +1,4 @@
-// github.com/comnics/did-example/core/did-document.go
+// github.com/comnics/did-example/core/did_document.go
 
 package core
 
