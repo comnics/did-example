@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/comnics/did-example/config"
 	"github.com/comnics/did-example/protos"
 	"google.golang.org/grpc"
 	"log"
@@ -32,7 +33,7 @@ func (server *registrarServer) RegisterDid(ctx context.Context, req *protos.Regi
 
 func main() {
 	fmt.Println("### Start Registrar ###")
-	lis, err := net.Listen("tcp", "0.0.0.0:9000")
+	lis, err := net.Listen("tcp", config.SystemConfig.RegistrarAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

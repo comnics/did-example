@@ -2,10 +2,17 @@ syntax = "proto3";
 
 option go_package = "github.com/comnics/did-example/protos";
 
+import "google/api/annotations.proto";
+
 package registrar;
 
 service Registrar {
-  rpc RegisterDid (RegistrarRequest) returns (RegistrarResponse) {}
+  rpc RegisterDid (RegistrarRequest) returns (RegistrarResponse) {
+    option (google.api.http) = {
+      post: "/register_did"
+      body: "*"
+    };
+  }
 }
 
 message RegistrarRequest {
