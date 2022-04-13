@@ -19,6 +19,7 @@ func NewDID(method string, pbKey string) (did *DID, err error) {
 	var newDid = new(DID)
 	newDid.method = method
 	specificIdentifier := util.MakeHashBase58(pbKey)
+	// DID:Method:specific
 	newDid.did = fmt.Sprintf("did:%s:%s", method, specificIdentifier)
 
 	return newDid, nil

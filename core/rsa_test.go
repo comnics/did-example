@@ -6,26 +6,26 @@ func TestNewRsa(t *testing.T) {
 	_, err := NewRsa()
 
 	if err != nil {
-		t.Error("Fail to New RAS.")
+		t.Error("Failed to generate RAS.")
 	}
 }
 
 func TestRsaSignAndVerify(t *testing.T) {
 	rsam, err := NewRsa()
 	if err != nil {
-		t.Error("Fail to New RAS.")
+		t.Error("Failed to generate RAS.")
 	}
 
 	msg := "Hello World."
 	sig, err := rsam.Sign(msg)
 	if err != nil {
-		t.Error("Fail to Sign.")
+		t.Error("Failed to Sign.")
 	}
 
 	res := rsam.Verify(msg, sig)
 
 	if !res {
-		t.Error("Fail to Verify.")
+		t.Error("Failed to Verify.")
 	}
 
 }

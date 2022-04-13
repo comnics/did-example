@@ -1,6 +1,8 @@
 {
-  "issuer_addr": "localhost:1021",
-  "verifier_addr": "localhost:1022",
+  "issuer_addr": "localhost:1121",
+  "verifier_addr": "localhost:1122",
   "registrar_addr": "localhost:9000",
-  "resolver_addr": "localhost:9001"
+  "registrar_gateway_addr": "localhost:9100",
+  "resolver_addr": "localhost:9001",
+  "resolver_gateway_addr": "localhost:9101"
 }

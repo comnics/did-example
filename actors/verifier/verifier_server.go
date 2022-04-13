@@ -1,4 +1,4 @@
-package main
+package verifier
 
 import (
 	"context"
@@ -7,13 +7,19 @@ import (
 	"log"
 )
 
-type VerifierServer struct {
+type Server struct {
 	protos.UnimplementedVerifierServer
 
-	verifier *Verifier
+	Verifier *Verifier
 }
 
-func (server *VerifierServer) SubmitVP(ctx context.Context, req *protos.SubmitVPRequest) (*protos.SubmitVPResponse, error) {
+type Verifier struct {
+	kms         *core.ECDSAManager
+	did         *core.DID
+	didDocument *core.DIDDocument
+}
+
+func (server *Server) SubmitVP(ctx context.Context, req *protos.SubmitVPRequest) (*protos.SubmitVPResponse, error) {
 	log.Printf("VP: %s\n", req.Vp)
 
 	verify, _, err := core.ParseAndVerifyJwtForVP(req.Vp)

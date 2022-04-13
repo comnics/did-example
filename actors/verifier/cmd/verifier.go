@@ -1,31 +1,26 @@
 package main
 
 import (
-	"github.com/comnics/did-example/core"
+	"github.com/comnics/did-example/actors/verifier"
+	"github.com/comnics/did-example/config"
 	"github.com/comnics/did-example/protos"
 	"google.golang.org/grpc"
 	"log"
 	"net"
 )
 
-type Verifier struct {
-	kms         *core.ECDSAManager
-	did         *core.DID
-	didDocument *core.DIDDocument
-}
-
 func main() {
 	// New Issuer
-	verifier := new(Verifier)
+	vrfr := new(verifier.Verifier)
 	//issuer.generateDID()
 
-	lis, err := net.Listen("tcp", "0.0.0.0:1022")
+	lis, err := net.Listen("tcp", config.SystemConfig.VerifierAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	verifierServer := VerifierServer{}
-	verifierServer.verifier = verifier
+	verifierServer := verifier.Server{}
+	verifierServer.Verifier = vrfr
 
 	s := grpc.NewServer()
 	protos.RegisterVerifierServer(s, &verifierServer)

@@ -16,10 +16,12 @@ func init() {
 
 // JSON struct
 type Configuration struct {
-	IssuerAddr    string `json:"issuer_addr"`
-	VerifierAddr  string `json:"verifier_addr"`
-	RegistrarAddr string `json:"registrar_addr"`
-	ResolverAddr  string `json:"resolver_addr"`
+	IssuerAddr           string `json:"issuer_addr"`
+	VerifierAddr         string `json:"verifier_addr"`
+	RegistrarAddr        string `json:"registrar_addr"`
+	RegistrarGatewayAddr string `json:"registrar_gateway_addr"`
+	ResolverAddr         string `json:"resolver_addr"`
+	ResolverGatewayAddr  string `json:"resolver_gateway_addr"`
 }
 
 func loadConfigration(path string) Configuration {
