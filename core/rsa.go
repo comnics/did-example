@@ -41,7 +41,7 @@ func NewRsa() (rsam *RSAManager, err error) {
 	rsam.PbKeyStr = base64.StdEncoding.EncodeToString(pbKeyByte)
 
 	pvKeyByte := x509.MarshalPKCS1PrivateKey(rsam.PrivateKey)
-	rsam.PbKeyStr = base64.StdEncoding.EncodeToString(pvKeyByte)
+	rsam.PvKeyStr = base64.StdEncoding.EncodeToString(pvKeyByte)
 
 	return rsam, nil
 }
