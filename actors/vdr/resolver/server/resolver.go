@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/comnics/did-example/config"
 	"github.com/comnics/did-example/protos"
 	"github.com/syndtr/goleveldb/leveldb"
 	"google.golang.org/grpc"
@@ -34,7 +35,7 @@ func (server *resolverServer) ResolveDid(ctx context.Context, req *protos.Resolv
 
 func main() {
 	fmt.Println("### Start Resolver ###")
-	lis, err := net.Listen("tcp", "0.0.0.0:9001")
+	lis, err := net.Listen("tcp", config.SystemConfig.ResolverAddr)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

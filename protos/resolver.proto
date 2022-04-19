@@ -2,10 +2,16 @@ syntax = "proto3";
 
 option go_package = "github.com/comnics/did-example/protos";
 
+import "google/api/annotations.proto";
+
 package resolver;
 
 service Resolver {
-  rpc ResolveDid (ResolverRequest) returns (ResolverResponse) {}
+  rpc ResolveDid (ResolverRequest) returns (ResolverResponse) {
+    option (google.api.http) = {
+      get: "/resolve/{did}"
+    };
+  }
 }
 
 message ResolverRequest {
