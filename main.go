@@ -39,7 +39,7 @@ func main() {
 	verificationMethod := []core.VerificationMethod{
 		{
 			Id:                 verificationId,
-			Type:               "EcdsaSecp256k1VerificationKey2019",
+			Type:               core.VERIFICATION_KEY_TYPE_SECP256K1,
 			Controller:         did.String(),
 			PublicKeyMultibase: ecdsa.PublicKeyMultibase(),
 		},

@@ -15,17 +15,18 @@ func TestDidDocument(t *testing.T) {
 
 	// DID Document 생성.
 	verificationId := fmt.Sprintf("%s#keys-1", did)
-	verificationMethod := []VerificationMethod{
-		{
-			Id:                 verificationId,
-			Type:               "EcdsaSecp256k1VerificationKey2019",
-			Controller:         did.String(),
-			PublicKeyMultibase: kms.PublicKeyMultibase(),
-		},
-	}
-	didDocument := NewDIDDocument(did.String(), verificationMethod)
+
+	// New DID Document
+	didDocument := NewDIDDocument(did.String(), nil)
+
+	// Add VerificationMethod
+	didDocument.AddVerificationMethod(verificationId, VERIFICATION_KEY_TYPE_SECP256K1, did.String(), kms.PublicKeyMultibase())
 
 	if didDocument == nil {
 		t.Error("failed to generate did-document.")
+	}
+
+	if len(didDocument.GetVerificationMethod()) != 1 {
+		t.Error("VerificationMethod Count must be 1.")
 	}
 }

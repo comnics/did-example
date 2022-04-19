@@ -4,6 +4,16 @@ package core
 
 import "encoding/json"
 
+const (
+	VERIFICATION_KEY_TYPE_SECP256K1 = "EcdsaSecp256k1VerificationKey2019"
+	VERIFICATION_KEY_TYPE_JWS       = "JsonWebKey2020"
+	VERIFICATION_KEY_TYPE_X25519    = "X25519KeyAgreementKey2019"
+	VERIFICATION_KEY_TYPE_ED25519   = "Ed25519VerificationKey2018"
+
+	PROOF_TYPE_ED25519 = "Ed25519Signature2018"
+	PROOF_TYPE_JWS     = "JsonWebSignature2020"
+)
+
 type didDocumentInterface interface {
 	produce(doc DIDDocument) string
 	consume(str string) DIDDocument
@@ -83,6 +93,21 @@ func (doc *DIDDocument) Consume(str string) {
 	if err != nil {
 
 	}
+}
+
+func (doc *DIDDocument) GetVerificationMethod() []VerificationMethod {
+	return doc.VerificationMethod
+}
+
+func (doc *DIDDocument) AddVerificationMethod(id string, typ string, controller string, publicKeyMultibase string) {
+	newVm := VerificationMethod{
+		Id:                 id,
+		Type:               typ,
+		Controller:         controller,
+		PublicKeyMultibase: publicKeyMultibase,
+	}
+
+	doc.VerificationMethod = append(doc.VerificationMethod, newVm)
 }
 
 func (doc *DIDDocument) String() string {

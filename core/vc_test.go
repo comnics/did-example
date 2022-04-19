@@ -59,7 +59,7 @@ func TestVCStruct2(t *testing.T) {
 			},
 		},
 		Proof: &Proof{
-			Type:               "EcdsaSecp256k1VerificationKey2019",
+			Type:               VERIFICATION_KEY_TYPE_SECP256K1,
 			Created:            time.Now().Format(time.RFC3339),
 			ProofPurpose:       "assertionMethod",
 			VerificationMethod: "https://example.edu/issuers/565049#key-1",
