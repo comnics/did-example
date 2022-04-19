@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/comnics/did-example/config"
 	"github.com/comnics/did-example/protos"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"google.golang.org/grpc"
 	"log"
 	"net/http"
@@ -19,7 +19,7 @@ func main() {
 		grpc.WithInsecure(),
 	}
 
-	fmt.Println("### Start Registrar ###")
+	fmt.Println("### Start Registrar RESTful ###")
 
 	if err := protos.RegisterRegistrarHandlerFromEndpoint(
 		ctx,
