@@ -48,8 +48,8 @@ type JwtClaims struct {
 }
 
 type VCInterface interface {
-	Sign()
-	Verify() bool
+	GenerateJWT() string
+	VerifyJwt() (bool, error)
 }
 
 func NewVC(id string, typ []string, issuer string, credentialSubject map[string]interface{}) (*VC, error) {
