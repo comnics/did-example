@@ -30,7 +30,7 @@ func RegisterDid(did string, didDocument string) error {
 		return errors.New("Failed to register DID.")
 	}
 
-	fmt.Printf("Registrar Response: %s\n", res)
+	log.Printf("Registrar Response: %s\n", res)
 
 	return nil
 }
@@ -53,7 +53,7 @@ func ResolveDid(did string) (string, error) {
 		log.Fatalf("Failed to resolve DID.")
 	}
 
-	fmt.Printf("Result: %s\n", res)
+	log.Printf("Resolver Response: %s\n", res)
 
 	return res.DidDocument, nil
 }
