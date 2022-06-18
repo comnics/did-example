@@ -31,6 +31,20 @@ type Signature struct {
 	S *big.Int
 }
 
+func (s Signature) String() string {
+	return s.R.String() + s.S.String()
+}
+
+// Not use now.
+type ECDSAInterface interface {
+	Sign(msg string) ([]byte, error)
+	SignToString(msg string) (string, error)
+	Verify() bool
+	Encode() string
+	//Decode() string
+}
+
+// Generate ECDSAManager
 func NewEcdsa() (ecdsa *ECDSAManager) {
 	ecdsa = new(ECDSAManager)
 	err := ecdsa.Generate()
@@ -42,18 +56,7 @@ func NewEcdsa() (ecdsa *ECDSAManager) {
 	return
 }
 
-func (s Signature) String() string {
-	return s.R.String() + s.S.String()
-}
-
-type ECDSAInterface interface {
-	Sign(msg string) ([]byte, error)
-	SignToString(msg string) (string, error)
-	Verify() bool
-	Encode() string
-	//Decode() string
-}
-
+// Genetate ecdsa keys(P256)
 func (e *ECDSAManager) Generate() error {
 	pvKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader) // elliptic.p224, elliptic.P384(), elliptic.P521()
 
@@ -67,6 +70,7 @@ func (e *ECDSAManager) Generate() error {
 	return nil
 }
 
+// sign
 func (e *ECDSAManager) Sign(digest []byte) (*Signature, error) {
 	r := big.NewInt(0)
 	s := big.NewInt(0)
@@ -88,6 +92,11 @@ func (e *ECDSAManager) Sign(digest []byte) (*Signature, error) {
 	return signature, nil
 }
 
+// Verify
+func (e *ECDSAManager) Verify(signature *Signature, digest []byte) bool {
+	return ecdsa.Verify(e.PublicKey, digest, signature.R, signature.S)
+}
+
 func (e *ECDSAManager) SignToString(digest []byte) (string, error) {
 	signature, err := e.Sign(digest)
 	if err != nil {
@@ -95,10 +104,6 @@ func (e *ECDSAManager) SignToString(digest []byte) (string, error) {
 	}
 
 	return signature.String(), nil
-}
-
-func (e *ECDSAManager) Verify(signature *Signature, digest []byte) bool {
-	return ecdsa.Verify(e.PublicKey, digest, signature.R, signature.S)
 }
 
 func (e *ECDSAManager) PublicKeyToString() (string, error) {
@@ -139,6 +144,7 @@ func (e *ECDSAManager) PublicKeyMultibase() string {
 		return ""
 	}
 
+	// The current multibase table: https://github.com/multiformats/multibase/blob/master/multibase.csv
 	str, err := multibase.Encode(multibase.Base58BTC, publicKeyBytes)
 	if err != nil {
 		log.Printf("error occured: %v", err.Error())
