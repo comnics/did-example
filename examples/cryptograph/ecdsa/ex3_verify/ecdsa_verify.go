@@ -75,9 +75,24 @@ func main() {
 	fmt.Printf("Signature: %+v\n", signature.String())
 
 	pbKey := &pvKey.PublicKey
-	ret := verify(signature, digest[:], pbKey)
 
-	fmt.Printf("########## Verification ##########\n")
+	// 검증
+	ret := verify(signature, digest[1:], pbKey)
+
+	fmt.Println("########## Verification ##########")
+	if ret {
+		fmt.Println("Signature verifies")
+	} else {
+		fmt.Println("Signature does not verify")
+	}
+
+	// 변경된 메시지에 대한 검증
+	msg2 := "Hi~, World."
+	digest2 := sha256.Sum256([]byte(msg2))
+
+	ret = verify(signature, digest2[:], pbKey)
+
+	fmt.Println("\n########## Verification 2 ##########")
 	if ret {
 		fmt.Printf("Signature verifies")
 	} else {
