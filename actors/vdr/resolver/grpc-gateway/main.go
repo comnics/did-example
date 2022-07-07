@@ -21,7 +21,7 @@ func main() {
 
 	fmt.Println("### Start Resover RESTful ###")
 
-	if err := protos.RegisterRegistrarHandlerFromEndpoint(
+	if err := protos.RegisterResolverHandlerFromEndpoint(
 		ctx,
 		mux,
 		config.SystemConfig.ResolverAddr,
