@@ -2,11 +2,14 @@ package issuer
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/comnics/did-example/core"
 	"github.com/comnics/did-example/protos"
+	"io/ioutil"
 	"log"
+	"os"
 )
 
 type Server struct {
@@ -19,12 +22,29 @@ type Issuer struct {
 	kms         *core.ECDSAManager
 	did         *core.DID
 	didDocument *core.DIDDocument
+
+	CredentialSubjectJsonFilePath string
+}
+
+const (
+	VC_MODE_TEST   = 1
+	VC_MODE_CUSTOM = 2
+)
+
+var (
+	vcMode = VC_MODE_TEST
+)
+
+type VC_CUSTOM_CLAIM struct {
+	data map[string]interface{}
 }
 
 func (server *Server) IssueSimpleVC(_ context.Context, msg *protos.MsgIssueVC) (*protos.MsgIssueVCResponse, error) {
 	log.Printf("IssueSimpleVC MSG: %+v \n", msg)
 
 	response := new(protos.MsgIssueVCResponse)
+
+	server.Issuer.CredentialSubjectJsonFilePath = "custom_vc.json"
 
 	vcToken, err := server.Issuer.GenerateSampleVC()
 	if err != nil {
@@ -63,26 +83,21 @@ func (issuer *Issuer) GenerateDID() {
 }
 
 func (issuer *Issuer) GenerateSampleVC() (string, error) {
+
+	var credentialSubject map[string]interface{}
+
+	if issuer.CredentialSubjectJsonFilePath == "" {
+
+	} else {
+		credentialSubject = LoadJson(issuer.CredentialSubjectJsonFilePath) // "custom_vc.json"
+	}
+
 	// VC 생성.
 	vc, err := core.NewVC(
 		"1234567890",
-		[]string{"VerifiableCredential", "AlumniCredential"},
+		[]string{"VerifiableCredential", "CertificationOfEmployee"},
 		issuer.did.String(),
-		map[string]interface{}{
-			"id": "1234567890",
-			"name": map[string]interface{}{
-				"id": "1234567",
-				"name": []map[string]string{
-					{
-						"value": "Example University",
-						"lang":  "en",
-					}, {
-						"value": "Exemple d'Université",
-						"lang":  "fr",
-					},
-				},
-			},
-		},
+		credentialSubject,
 	)
 
 	if err != nil {
@@ -102,4 +117,20 @@ func RegisterDid(did string, document *core.DIDDocument) error {
 	}
 	return nil
 
+}
+
+func LoadJson(path string) map[string]interface{} {
+	jsonData := make(map[string]interface{})
+
+	data, err := os.Open(path)
+	if err != nil {
+		return nil
+	}
+
+	vcMode = VC_MODE_CUSTOM
+	byteValue, _ := ioutil.ReadAll(data)
+
+	json.Unmarshal(byteValue, &jsonData)
+
+	return jsonData
 }
