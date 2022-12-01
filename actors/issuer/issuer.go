@@ -105,7 +105,7 @@ func (issuer *Issuer) GenerateSampleVC() (string, error) {
 	}
 
 	// VC에 Issuer의 private key로 서명한다.(JWT 사용)
-	token := vc.GenerateJWT(issuer.didDocument.VerificationMethod[0].Id, issuer.kms.PrivateKey)
+	token, err := vc.GenerateJWT(issuer.didDocument.VerificationMethod[0].Id, issuer.kms.PrivateKey)
 
 	return token, nil
 }

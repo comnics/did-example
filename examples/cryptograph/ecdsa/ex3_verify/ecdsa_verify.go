@@ -40,6 +40,16 @@ func sign(digest []byte, pvKey *ecdsa.PrivateKey) (*Signature, error) {
 	return signature, nil
 }
 
+func SignASN1(digest []byte, pvKey *ecdsa.PrivateKey) ([]byte, error) {
+
+	signature, err := ecdsa.SignASN1(rand.Reader, pvKey, digest)
+	if err != nil {
+		return nil, err //errors.New("failed to sign to msg.")
+	}
+
+	return signature, nil
+}
+
 func SignToString(digest []byte, pvKey *ecdsa.PrivateKey) (string, error) {
 	signature, err := sign(digest, pvKey)
 	if err != nil {
@@ -53,6 +63,10 @@ func verify(signature *Signature, digest []byte, pbKey *ecdsa.PublicKey) bool {
 	return ecdsa.Verify(pbKey, digest, signature.R, signature.S)
 }
 
+func verifyASN1(signature []byte, digest []byte, pbKey *ecdsa.PublicKey) bool {
+	return ecdsa.VerifyASN1(pbKey, digest, signature)
+}
+
 func main() {
 	pvKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader) // elliptic.p224, elliptic.P384(), elliptic.P521()
 
@@ -60,7 +74,7 @@ func main() {
 		log.Println("ECDSA Keypair generation was Fail!")
 	}
 
-	msg := "Hello World."
+	msg := "Hello SSI-KOREA."
 	digest := sha256.Sum256([]byte(msg))
 	signature, err := sign(digest[:], pvKey)
 	if err != nil {
@@ -77,9 +91,23 @@ func main() {
 	pbKey := &pvKey.PublicKey
 
 	// 검증
-	ret := verify(signature, digest[1:], pbKey)
+	ret := verify(signature, digest[:], pbKey)
 
 	fmt.Println("########## Verification ##########")
+	if ret {
+		fmt.Println("Signature verifies")
+	} else {
+		fmt.Println("Signature does not verify")
+	}
+
+	signatureASN1, err := SignASN1(digest[:], pvKey)
+	if err != nil {
+		log.Printf("Failed to sign msg.")
+	}
+	// 검증2
+	ret = verifyASN1(signatureASN1, digest[:], pbKey)
+
+	fmt.Println("########## Verification 2 ##########")
 	if ret {
 		fmt.Println("Signature verifies")
 	} else {
@@ -92,7 +120,7 @@ func main() {
 
 	ret = verify(signature, digest2[:], pbKey)
 
-	fmt.Println("\n########## Verification 2 ##########")
+	fmt.Println("\n########## Verification 3 ##########")
 	if ret {
 		fmt.Printf("Signature verifies")
 	} else {

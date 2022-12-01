@@ -1,3 +1,5 @@
+// core/ecdsa_test.go
+
 package core
 
 import (
@@ -44,5 +46,18 @@ func ExampleEcdsa() {
 		fmt.Printf("Signature does not verify")
 	}
 
-	// Output: Signature verifies
+	signatureASN1, err := ecdsa.SignASN1(digest[:])
+	if err != nil {
+		fmt.Printf("Fail to sign to msg.")
+	}
+
+	ret = ecdsa.VerifyASN1(signatureASN1, digest[:])
+
+	if ret {
+		fmt.Printf(",SignatureASN1 verifies")
+	} else {
+		fmt.Printf("Signature does not verify")
+	}
+
+	// Output: Signature verifies,SignatureASN1 verifies
 }

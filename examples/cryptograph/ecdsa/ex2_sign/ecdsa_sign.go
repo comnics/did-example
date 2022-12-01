@@ -40,6 +40,15 @@ func sign(digest []byte, pvKey *ecdsa.PrivateKey) (*Signature, error) {
 	return signature, nil
 }
 
+func SignASN1(digest []byte, pvKey *ecdsa.PrivateKey) ([]byte, error) {
+	signature, err := ecdsa.SignASN1(rand.Reader, pvKey, digest)
+	if err != nil {
+		return nil, err //errors.New("failed to sign to msg.")
+	}
+
+	return signature, nil
+}
+
 func SignToString(digest []byte, pvKey *ecdsa.PrivateKey) (string, error) {
 	signature, err := sign(digest, pvKey)
 	if err != nil {
@@ -58,9 +67,14 @@ func main() {
 
 	//pbKey := &pvKey.PublicKey
 
-	msg := "Hello World."
+	msg := "Hello SSI-KOREA."
 	digest := sha256.Sum256([]byte(msg))
 	signature, err := sign(digest[:], pvKey)
+	if err != nil {
+		log.Printf("Failed to sign msg.")
+	}
+
+	signatureASN1, err := SignASN1(digest[:], pvKey)
 	if err != nil {
 		log.Printf("Failed to sign msg.")
 	}
@@ -71,5 +85,6 @@ func main() {
 	fmt.Printf("Digest: %x\n", digest)
 	fmt.Printf("R: %s, S: %s\n", signature.R, signature.S)
 	fmt.Printf("Signature: %+v\n", signature.String())
+	fmt.Printf("SignatureASN1: %+v\n", signatureASN1)
 
 }
