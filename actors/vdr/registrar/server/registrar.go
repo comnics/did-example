@@ -28,7 +28,6 @@ func (server *registrarServer) RegisterDid(ctx context.Context, req *protos.Regi
 	err = db.Put([]byte(req.Did), []byte(req.DidDocument), nil)
 
 	return &protos.RegistrarResponse{Result: "OK"}, nil
-
 }
 
 func main() {

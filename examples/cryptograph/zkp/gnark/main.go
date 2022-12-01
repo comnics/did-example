@@ -12,7 +12,7 @@ import (
 
 // run this from /integration/solidity to regenerate files
 // note: this is not in go generate format to avoid solc dependency in circleCI for now.
-// go run contract/main.go && abigen --sol contract.sol --pkg solidity --out solidity.go
+// go run contract/issuerd.go && abigen --sol contract.sol --pkg solidity --out solidity.go
 func main() {
 	var circuit cubic.Circuit
 

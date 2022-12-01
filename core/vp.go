@@ -12,11 +12,10 @@ import (
 )
 
 type VP struct {
-	Context      []string `json:"@context"`
-	Id           string   `json:"id,omitempty"`
-	Type         []string `json:"type,omitempty"`
-	Issuer       string   `json:"issuer,omitempty"`
-	IssuanceDate string   `json:"issuanceDate,omitempty"`
+	Context []string `json:"@context"`
+	Id      string   `json:"id,omitempty"`
+	Type    []string `json:"type,omitempty"`
+	Holder  string   `json:"holder,omitempty"`
 
 	// jwt의 token형식으로 저장한다.
 	VerifiableCredential []string `json:"verifiableCredential"`
@@ -31,15 +30,14 @@ type JwtClaimsForVP struct {
 	Vp    VP `json:"vp,omitempty"`
 }
 
-func NewVP(id string, typ []string, issuer string, vcTokens []string) (*VP, error) {
+func NewVP(id string, typ []string, holder string, vcTokens []string) (*VP, error) {
 	newVP := &VP{
 		Context: []string{
 			"https://www.w3.org/2018/credentials/v1",
-			"https://www.w3.org/2018/credentials/v2",
 		},
 		Id:                   id,
 		Type:                 typ,
-		Issuer:               issuer,
+		Holder:               holder,
 		VerifiableCredential: vcTokens,
 	}
 	return newVP, nil
@@ -47,12 +45,11 @@ func NewVP(id string, typ []string, issuer string, vcTokens []string) (*VP, erro
 
 func (vp *VP) GenerateJWT(verificationId string, pvKey *ecdsa.PrivateKey) string {
 	aud := ""
-	exp := time.Now().Add(time.Minute * 5).Unix()       //만료 시간. 현재 + 5분
-	jti := uuid.NewString()                             // JWT ID
-	t, err := time.Parse(time.RFC3339, vp.IssuanceDate) //unixtime으로 바꾸기 위해.
-	iat := t.Unix()
+	exp := time.Now().Add(time.Minute * 5).Unix() //만료 시간. 현재 + 5분
+	jti := uuid.NewString()                       // JWT ID
+	iat := time.Now().Unix()
 	nbf := iat
-	iss := vp.Issuer
+	iss := vp.Holder
 	sub := "Verifiable Presentation"
 
 	// Proof를 제거하고 JWT를 만들기 위해 복제한다.

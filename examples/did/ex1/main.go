@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	method := "comnic"
+	method := "ssikr"
 	specificIdentifier := "abcd1234"
 
 	did := fmt.Sprintf("did:%s:%s", method, specificIdentifier)

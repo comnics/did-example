@@ -7,13 +7,24 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 )
 
+var VcCustomFilePath string
+
+// for Custom VC of type json
+// go run actors/issuer/cmd/issuerd.go custom_vc.json
 func main() {
+	argsWithoutProg := os.Args[1:]
 
 	// New Issuer
 	issr := new(issuer.Issuer)
 	issr.GenerateDID()
+
+	if len(argsWithoutProg) > 0 {
+		issr.CredentialSubjectJsonFilePath = argsWithoutProg[0]
+		//loadJson(vcCustomFilePath)
+	}
 
 	lis, err := net.Listen("tcp", config.SystemConfig.IssuerAddr)
 	if err != nil {

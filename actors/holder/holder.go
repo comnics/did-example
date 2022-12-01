@@ -15,6 +15,7 @@ type Holder struct {
 	Kms         *core.ECDSAManager
 	Did         *core.DID
 	DidDocument *core.DIDDocument
+	VcList      []*core.VC
 }
 
 func (holder *Holder) GenerateDID() {

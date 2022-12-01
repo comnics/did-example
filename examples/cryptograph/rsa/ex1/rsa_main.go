@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"os"
 )
 
 func main() {
@@ -14,6 +15,7 @@ func main() {
 	pvKey, err := rsa.GenerateKey(rand.Reader, 1024) // 2048, 4096
 	if err != nil {
 		log.Printf("Failed to Generate RSA.")
+		os.Exit(0)
 	}
 
 	fmt.Printf("Private Key: %+v\n", pvKey) //%+v 필드명과 함께 출력.

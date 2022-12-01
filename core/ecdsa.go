@@ -1,4 +1,4 @@
-// core/did.go
+// core/ecdsa.go
 
 package core
 
@@ -92,9 +92,24 @@ func (e *ECDSAManager) Sign(digest []byte) (*Signature, error) {
 	return signature, nil
 }
 
+// signASN1
+func (e *ECDSAManager) SignASN1(digest []byte) ([]byte, error) {
+	signature, err := ecdsa.SignASN1(rand.Reader, e.PrivateKey, digest)
+	if err != nil {
+		return nil, err //errors.New("failed to sign to msg.")
+	}
+
+	return signature, nil
+}
+
 // Verify
 func (e *ECDSAManager) Verify(signature *Signature, digest []byte) bool {
 	return ecdsa.Verify(e.PublicKey, digest, signature.R, signature.S)
+}
+
+// VerifyASN1
+func (e *ECDSAManager) VerifyASN1(signature []byte, digest []byte) bool {
+	return ecdsa.VerifyASN1(e.PublicKey, digest, signature)
 }
 
 func (e *ECDSAManager) SignToString(digest []byte) (string, error) {

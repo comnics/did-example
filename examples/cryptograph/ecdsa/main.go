@@ -1,4 +1,4 @@
-// examples/cryptograph/ecdsa/main.go
+// examples/cryptograph/ecdsa/issuerd.go
 
 package main
 

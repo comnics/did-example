@@ -10,31 +10,25 @@ import (
 )
 
 func sign(msg string, pvKey *rsa.PrivateKey) ([]byte, error) {
-	hash := sha256.New()
-	hash.Write([]byte(msg))
-	digest := hash.Sum(nil)
+	digest := sha256.Sum256([]byte(msg))
 
-	var h crypto.Hash
 	signature, err := rsa.SignPKCS1v15(
 		rand.Reader,
 		pvKey,
-		h,
-		digest,
+		crypto.SHA256,
+		digest[:],
 	)
 
 	return signature, err
 }
 
 func verify(msg string, signature []byte, pbKey *rsa.PublicKey) bool {
-	hash := sha256.New()
-	hash.Write([]byte(msg))
-	digest := hash.Sum(nil)
+	digest := sha256.Sum256([]byte(msg))
 
-	var h crypto.Hash
 	err := rsa.VerifyPKCS1v15(
 		pbKey,
-		h,
-		digest,
+		crypto.SHA256,
+		digest[:],
 		signature,
 	)
 	if err != nil {
