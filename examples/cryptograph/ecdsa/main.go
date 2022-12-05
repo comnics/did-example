@@ -1,4 +1,4 @@
-// examples/cryptograph/ecdsa/issuerd.go
+// examples/cryptograph/ecdsa/main.go
 
 package main
 
@@ -39,9 +39,30 @@ func main() {
 
 	fmt.Printf("########## Verification ##########\n")
 	if ret {
-		fmt.Printf("Signature verifies")
+		fmt.Printf("Signature verifies\n")
 	} else {
-		fmt.Printf("Signature does not verify")
+		fmt.Printf("Signature does not verify\n")
+	}
+
+	// ASN1
+	signatureASN1, err := ecdsa.SignASN1(digest[:])
+	if err != nil {
+		fmt.Printf("Fail to sign to msg.")
+	}
+
+	fmt.Printf("\n\n########## SignASN1 ##########\n")
+	fmt.Printf("===== Message =====\n")
+	fmt.Printf("Msg: %s\n", msg)
+	fmt.Printf("Digest: %x\n", digest)
+	fmt.Printf("Signature: %x \n\n", signatureASN1)
+
+	ret = ecdsa.VerifyASN1(signatureASN1, digest[:])
+
+	fmt.Printf("########## Verification ASN1 ##########\n")
+	if ret {
+		fmt.Printf("SignatureASN1 verifies\n")
+	} else {
+		fmt.Printf("Signature does not verify\n")
 	}
 
 }

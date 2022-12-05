@@ -28,7 +28,7 @@ func NewSimpleVC(verificationId string, privateKey *ecdsa.PrivateKey) string {
 
 	}
 
-	token := vc.GenerateJWT(verificationId, privateKey)
+	token, err := vc.GenerateJWT(verificationId, privateKey)
 
 	return token
 
