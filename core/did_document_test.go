@@ -1,3 +1,5 @@
+// core/did_document_test.go
+
 package core
 
 import (
@@ -6,18 +8,19 @@ import (
 )
 
 func TestDidDocument(t *testing.T) {
-	method := "comnic"
-	// 키생성(ECDSA) - 향후 KMS로 대체.
+	method := "ssikr"
+	// 1. 키생성(ECDSA) - 향후 KMS로 대체.
 	kms := NewEcdsa()
 
-	// DID 생성.
+	// 2. DID 생성.
 	did, _ := NewDID(method, kms.PublicKeyBase58())
 
-	// DID Document 생성.
-	verificationId := fmt.Sprintf("%s#keys-1", did)
+	// 3. DID Document 생성.
 
 	// New DID Document
 	didDocument := NewDIDDocument(did.String(), nil)
+
+	verificationId := fmt.Sprintf("%s#keys-1", did)
 
 	// Add VerificationMethod
 	didDocument.AddVerificationMethod(verificationId, VERIFICATION_KEY_TYPE_SECP256K1, did.String(), kms.PublicKeyMultibase())
