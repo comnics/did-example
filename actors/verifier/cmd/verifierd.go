@@ -25,7 +25,7 @@ func main() {
 	s := grpc.NewServer()
 	protos.RegisterVerifierServer(s, &verifierServer)
 
-	log.Printf("Issuer Server is listening at %v", lis.Addr())
+	log.Printf("Verifier Server is listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
