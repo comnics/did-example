@@ -71,6 +71,7 @@ func (vp *VP) GenerateJWT(verificationId string, pvKey *ecdsa.PrivateKey) string
 		*vpTmp,
 	}
 
+	//ES256 must be paired with ECDSA using P-256 and SHA-256 as the MAC algorithm.
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwtClaims)
 	token.Header["kid"] = verificationId
 

@@ -54,7 +54,7 @@ func main() {
 	}
 
 	// VC에 Issuer의 private key로 서명한다.(JWT 사용)
-	token := vc.GenerateJWT(verificationId, issuerKeyEcdsa.PrivateKey)
+	token, err := vc.GenerateJWT(verificationId, issuerKeyEcdsa.PrivateKey)
 
 	// 생성된 VC를 검증한다.(public key를 사용해서 검증)
 	res, _ := vc.VerifyJwt(token, issuerKeyEcdsa.PublicKey)

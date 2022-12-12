@@ -11,7 +11,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/multiformats/go-multibase v0.0.3
+	github.com/multiformats/go-multibase v0.1.1
 	github.com/stretchr/testify v1.8.0
 	github.com/syndtr/goleveldb v1.0.0
 	google.golang.org/genproto v0.0.0-20220519153652-3a47de7e79bd

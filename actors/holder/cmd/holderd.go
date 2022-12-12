@@ -52,6 +52,8 @@ func main() {
 	vpToken := vp.GenerateJWT(hldr.DidDocument.VerificationMethod[0].Id, hldr.Kms.PrivateKey)
 	fmt.Printf("VP Token: %s\n", vpToken)
 
-	holder.SubmitVP(vpToken)
+	res := holder.SubmitVP(vpToken)
+
+	fmt.Println(res)
 
 }

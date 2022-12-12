@@ -1,3 +1,4 @@
+// examples/vdr/ex_vdr.go
 package main
 
 import (
@@ -7,7 +8,7 @@ import (
 )
 
 func main() {
-	var method = "comnic"
+	var method = "ssikr"
 
 	kms := new(core.ECDSAManager)
 	kms.Generate()

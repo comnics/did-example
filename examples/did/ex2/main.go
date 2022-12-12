@@ -22,7 +22,7 @@ func NewDID(method string, pbKey string) (string, error) {
 }
 
 func main() {
-	var method = "comnic"
+	var method = "ssikr"
 
 	kms := new(core.ECDSAManager)
 	kms.Generate()
