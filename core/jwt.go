@@ -2,10 +2,8 @@ package core
 
 import (
 	"crypto/ecdsa"
-	"crypto/x509"
 	"fmt"
 	"github.com/golang-jwt/jwt"
-	"github.com/multiformats/go-multibase"
 	"log"
 	"strings"
 )
@@ -20,11 +18,9 @@ func VerifyJwt(token string, pbKey *ecdsa.PublicKey) (bool, error) {
 }
 
 // Parse VC JWT Claim and Verify VC JWT.
-//
 // claims의 Issuer에 발급자의 DID가 있다.
 // DID를 Resolve해서 DID Document를 받아온다.
-// DID도큐먼트의 key ID를 기준으로 public key의 값을 가져와야 하나,
-// 여기서는 1개만 존재한다고 가정하고 첫번째를 사용해서 public key를 만들어 사용한다.
+// DID Document의 VerificationMethod에서 kid에 해당하는 public key를 구한다.
 func ParseAndVerifyJwtForVC(tokenString string) (bool, *JwtClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 
@@ -44,21 +40,13 @@ func ParseAndVerifyJwtForVC(tokenString string) (bool, *JwtClaims, error) {
 		}
 
 		//JSON string을 DID Document 객체로 변환한다.
-		didDocument, err := NewDIDDocumentForString(didDocumentStr)
+		didDocument, err := NewDIDDocumentFormString(didDocumentStr)
 		if err != nil {
 			log.Printf("Failed generate DID Document from string.\nError: %x\n", err)
 		}
 
-		// 첫 번째를 사용한다고 가정한다.
-		// TODO: 키 ID(위의 kid)에 해당하는 키 값 구하기. didDocument.findKey(kid)
-		kid := token.Header["kid"].(string)
-		_ = kid
-
-		pbKeyBaseMultibase := didDocument.VerificationMethod[0].PublicKeyMultibase
-		_, bytePubKey, err := multibase.Decode(pbKeyBaseMultibase)
-		pbKey, err := x509.ParsePKIXPublicKey(bytePubKey)
-
-		return pbKey, nil
+		//kid에 해당하는 public key를 구한다.
+		return didDocument.FindPublickey(token.Header["kid"].(string)), nil
 	})
 
 	if claims, ok := token.Claims.(*JwtClaims); ok && token.Valid {
@@ -90,17 +78,12 @@ func ParseAndVerifyJwtForVP(tokenString string) (bool, *JwtClaimsForVP, error) {
 		}
 
 		//Json string을 DID Document 객체로 생성한다.
-		didDocument, err := NewDIDDocumentForString(didDocumentStr)
+		didDocument, err := NewDIDDocumentFormString(didDocumentStr)
 		if err != nil {
 			log.Printf("Failed generate DID Document from string.\nError: %x\n", err)
 		}
-		// 첫 번째를 사용한다고 가정한다.
-		// TODO: 키 ID(위의 kid)에 해당하는 키 값 구하기.
-		pbKeyBaseMultibase := didDocument.VerificationMethod[0].PublicKeyMultibase
-		_, bytePubKey, err := multibase.Decode(pbKeyBaseMultibase)
-		pbKey, err := x509.ParsePKIXPublicKey(bytePubKey)
 
-		return pbKey, nil
+		return didDocument.FindPublickey(token.Header["kid"].(string)), nil
 	})
 
 	fmt.Println("parseToken: ", parseToken)

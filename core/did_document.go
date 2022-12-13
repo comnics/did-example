@@ -2,7 +2,11 @@
 
 package core
 
-import "encoding/json"
+import (
+	"crypto/x509"
+	"encoding/json"
+	"github.com/multiformats/go-multibase"
+)
 
 const (
 	VERIFICATION_KEY_TYPE_SECP256K1 = "EcdsaSecp256k1VerificationKey2019"
@@ -69,7 +73,7 @@ func NewDIDDocument(did string, verificationMethod []VerificationMethod) (doc *D
 	return docTmp
 }
 
-func NewDIDDocumentForString(docStr string) (didDoc *DIDDocument, err error) {
+func NewDIDDocumentFormString(docStr string) (didDoc *DIDDocument, err error) {
 	didDoc = new(DIDDocument)
 	e := json.Unmarshal([]byte(docStr), didDoc)
 	if e != nil {
@@ -108,6 +112,33 @@ func (doc *DIDDocument) AddVerificationMethod(id string, typ string, controller 
 	}
 
 	doc.VerificationMethod = append(doc.VerificationMethod, newVm)
+}
+
+func (doc *DIDDocument) FindVerificationMethod(keyId string) *VerificationMethod {
+	if len(doc.VerificationMethod) == 0 {
+		return nil
+	}
+
+	for _, vm := range doc.VerificationMethod {
+		if vm.Id == keyId {
+			return &vm
+		}
+	}
+
+	return nil
+}
+
+func (doc *DIDDocument) FindPublickey(keyId string) any {
+	vm := doc.FindVerificationMethod(keyId)
+	if vm == nil {
+		return nil
+	}
+
+	pbKeyBaseMultibase := vm.PublicKeyMultibase
+	_, bytePubKey, _ := multibase.Decode(pbKeyBaseMultibase)
+	pbKey, _ := x509.ParsePKIXPublicKey(bytePubKey)
+
+	return pbKey
 }
 
 func (doc *DIDDocument) String() string {

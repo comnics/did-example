@@ -32,9 +32,21 @@ func main() {
 		},
 	}
 	didDocument := core.NewDIDDocument(did.String(), verificationMethod)
+	verificationId2 := fmt.Sprintf("%s#keys-2", did)
+	didDocument.AddVerificationMethod(verificationId2, core.VERIFICATION_KEY_TYPE_SECP256K1, did.String(), "Second pub-key")
 
 	fmt.Println("### Generate DID & DID Document ###")
 	fmt.Printf("did => %s\n", did)
 	fmt.Printf("did document => %+v\n", didDocument)
+
+	vm := didDocument.FindKey(verificationId)
+	if vm != nil {
+		fmt.Println("VerificaionMethod: ", vm)
+	}
+
+	vm2 := didDocument.FindKey(verificationId2)
+	if vm2 != nil {
+		fmt.Println("VerificaionMethod: ", vm2)
+	}
 
 }
