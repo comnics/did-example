@@ -39,12 +39,12 @@ func main() {
 	fmt.Printf("did => %s\n", did)
 	fmt.Printf("did document => %+v\n", didDocument)
 
-	vm := didDocument.FindKey(verificationId)
+	vm := didDocument.FindVerificationMethod(verificationId)
 	if vm != nil {
 		fmt.Println("VerificaionMethod: ", vm)
 	}
 
-	vm2 := didDocument.FindKey(verificationId2)
+	vm2 := didDocument.FindVerificationMethod(verificationId2)
 	if vm2 != nil {
 		fmt.Println("VerificaionMethod: ", vm2)
 	}
