@@ -5,7 +5,7 @@ package util
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/btcsuite/btcutil/base58"
+	"github.com/btcsuite/btcd/btcutil/base58"
 )
 
 func MakeHash(plain string) []byte {
